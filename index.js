@@ -54,7 +54,7 @@ const server = net.createServer((socket) => {
                     socket.write("HTTP/1.1 200 OK\r\n\r\n");
                     socket.write("home\r\n");
                     socket.write("Para fazer buscar de algum documento, digite / seguido pelo nome do arquivo e formato.\r\n");
-                    socket.write("Para acessar o método POST digite /form.html \r\n");
+                    socket.write("Para acessar o metodo POST digite /form.html \r\n");
                 } else if (err) {
                     socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
                     console.log(err);
