@@ -1,11 +1,14 @@
+
 const net = require("net");
 const fs = require("fs");
 
 
 
-// o cliente é o browser, ele manda um sinal via tcp, o servidor recebe essa informação e tenta interpretar. nesse código aqui a gente faz solicitações via socket. a gente ta codando o servidor que se comunica com esse cliente. 
-/* o browser pede em http e vc tem que devolver isso na linguagem que ele entende
- */
+// o cliente é o browser, ele manda um sinal via tcp, o servidor recebe essa informação e tenta interpretar. nesse código aqui a gente faz solicitações via socket e codamos o servidor que se comunica com esse cliente. 
+
+
+const port = 8002;
+const host = "127.0.0.1";
 
 const arquivos = "./arquivos";
 
@@ -19,6 +22,9 @@ const splitando = (splitLine) => {
     return objeto;
 };
 
+
+
+
 const server = net.createServer((socket) => {
     console.log(
         `=> (${socket.remoteAddress} : ${socket.remotePort}) se conectou ao servidor!`
@@ -29,8 +35,16 @@ const server = net.createServer((socket) => {
         var objeto = splitando(dado);
 
         console.log(splitando(dado));
-          
-        if (!fs.existsSync(arquivos + dado.split(" ")[1])) {
+       
+                    
+       if(dado.startsWith("POST")) {
+        fs.appendFile("Fileindex.html", `postado!`, (err)=> {
+            if(err) throw err;
+            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n`)
+            console.log('created!');
+        })
+        }
+         else if (!fs.existsSync(arquivos + dado.split(" ")[1])) {
             socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
             socket.end();
         } else {
@@ -38,7 +52,8 @@ const server = net.createServer((socket) => {
             fs.readFile(arquivos + objeto.path, (err, data) => {
                 if (objeto.path == "/") {
                     socket.write("HTTP/1.1 200 OK\r\n\r\n");
-                    socket.write("home");
+                    socket.write("home\r\n");
+                    socket.write("<h1>olá</h1>\r\n");
                 } else if (err) {
                     socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
                     console.log(err);
@@ -61,8 +76,6 @@ const server = net.createServer((socket) => {
     });
 });
 
-const port = 8002;
-const host = "127.0.0.1";
 
 server.listen(port, host, () => {
     console.log(`Servidor iniciado em localhost:${port}`);
